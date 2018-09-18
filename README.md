@@ -24,7 +24,7 @@ compares cached files with new changes. Only releases changed files downstream
 
 Releases all cached files at that point downstream in correct order
 
-### postCache
+### postCache(cacheName)
 
 Postprocessing for gulp-cache-uncache. See [index.js](./index.js) for more information
 
