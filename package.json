@@ -1,0 +1,34 @@
+{
+  "name": "gulp-cache-uncache",
+  "description": "A simple in-memory 'double' file cache for gulp",
+  "version": "0.0.1",
+  "homepage": "http://github.com/aschnapp/gulp-cache-uncache",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aschnapp/gulp-cache-uncache.git"
+  },
+  "author": "aschnapp (https://aschnapp.com/)",
+  "main": "index.js",
+  "dependencies": {
+    "through2": "^2.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.5.0",
+    "mocha": "^3.0.0",
+    "vinyl": "^2.0.0"
+  },
+  "scripts": {
+    "test": "mocha",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": ">= 6.0.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "gulpplugin",
+    "gulp",
+    "uglify",
+    "concat"
+  ]
+}
