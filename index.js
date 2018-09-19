@@ -8,6 +8,11 @@ const cache = function(name) {
     caches[name].next = new Map();
   }
   return through.obj(function(file, _enc, callback){
+    if (!file) {
+      callback();
+      return;
+    }
+    // saves file to next
     caches[name].next.set(file.path, {
       original: file.contents,
       processed: caches[name].prev 
@@ -16,7 +21,9 @@ const cache = function(name) {
           : undefined 
         : undefined
     });
+    this.push(file);
     callback();
+    return;
   });
 };
 
@@ -27,6 +34,7 @@ const compare = function(name) {
       if (file.isStream()) {
         this.push(file);
         callback();
+        return;
       }
       if (file.isBuffer()) {
         contents = file.contents.toString('utf8');
@@ -47,6 +55,7 @@ const compare = function(name) {
     // miss - add it and pass it through
     this.push(file);
     callback();
+    return;
   });
 };
 
@@ -67,23 +76,26 @@ const uncache = function(name) {
       this.push(i[1].processed);
     }
     callback();
+    return;
   });
 };
 
 const postCache = function(name) {
   caches[name].prev = caches[name].next;
   caches[name].next = new Map();
-  return through.obj(function(_file, _enc, callback) {
+  return through.obj(function(file, _enc, callback) {
+    this.push(file);
     callback();
+    return;
   });
 };
 
 const remove = function(name, filePath) {
   if (caches[name] && caches[name].next) {
-    caches[name].next.delete(filePath);
+    return caches[name].next.delete(filePath);
   }
 };
 
 const caches = {};
 
-module.exports = { cache, compare, uncache, postCache, remove };
+module.exports = { cache, compare, uncache, postCache, remove, caches };
