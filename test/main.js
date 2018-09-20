@@ -241,14 +241,24 @@ describe('gulp-cache-uncache', function() {
         path: '/home/file.js',
         contents: new Buffer('cache')
       });
+      const file1 = new File({
+        path: '/home/file1.js',
+        contents: new Buffer('cache')
+      });
       const cstream = cache('8');
       cstream.on('data', function() {
         expect(caches['8'].next.has(file.path)).to.equal(true);
+      });
+      cstream.on('end', function() {
+        postCache('8');
         remove('8', file.path);
         expect(caches['8'].next.has(file.path)).to.equal(false);
+        expect(caches['8'].prev.has(file.path)).to.equal(false);
         done();
       });
       cstream.write(file);
+      cstream.write(file1);
+      cstream.end();
     });
   });
 });
