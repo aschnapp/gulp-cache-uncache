@@ -91,8 +91,11 @@ const postCache = function(name) {
 };
 
 const remove = function(name, filePath) {
-  if (caches[name] && caches[name].next) {
-    return caches[name].next.delete(filePath);
+  if (caches[name]) {
+    if (caches[name].next)
+      caches[name].next.delete(filePath);
+    if (caches[name].prev)
+      caches[name].prev.delete(filePath);
   }
 };
 
