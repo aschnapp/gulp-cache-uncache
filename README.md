@@ -2,6 +2,8 @@
 
 Gulp plugin for in memory file caching. Works with concat and preserves file order.
 
+Please check github for the latest version of the readme.
+
 ## Installation
 
 ```yarn add gulp-cache-uncache --dev```

@@ -1,7 +1,7 @@
 {
   "name": "gulp-cache-uncache",
   "description": "A simple in-memory 'double' file cache for gulp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "http://github.com/aschnapp/gulp-cache-uncache",
   "repository": {
     "type": "git",
