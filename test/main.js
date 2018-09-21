@@ -28,7 +28,7 @@ describe('gulp-cache-uncache', function() {
       });
       const stream = cache('1');
       stream.on('data', function() {
-        expect(caches['1'].prev).to.equal(undefined)
+        expect(caches['1'].prev).to.equal(undefined);
       });
       stream.on('end', function() {
         const temp = new Map(caches['1'].next);
