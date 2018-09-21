@@ -1,17 +1,15 @@
 const through = require('through2');
 
+const caches = {};
+
 const cache = function(name) {
   if (!caches[name]) {
     caches[name] = {};
   }
-  if (!caches[name].next) {
-    caches[name].next = new Map();
-  }
+  caches[name].prev = caches[name].next;
+  caches[name].next = new Map();
   return through.obj(function(file, _enc, callback){
-    if (!file) {
-      callback();
-      return;
-    }
+    if (!file) return callback();
     // saves file to next
     caches[name].next.set(file.path, {
       original: file.contents,
@@ -22,8 +20,7 @@ const cache = function(name) {
         : undefined
     });
     this.push(file);
-    callback();
-    return;
+    return callback();
   });
 };
 
@@ -33,8 +30,7 @@ const compare = function(name) {
     if (!contents) {
       if (file.isStream()) {
         this.push(file);
-        callback();
-        return;
+        return callback();
       }
       if (file.isBuffer()) {
         contents = file.contents.toString('utf8');
@@ -48,14 +44,10 @@ const compare = function(name) {
       }
     }
     // hit - ignore it
-    if (typeof cacheFile !== 'undefined' && cacheFile === contents) {
-      callback();
-      return;
-    }
+    if (typeof cacheFile !== 'undefined' && cacheFile === contents) return callback();
     // miss - add it and pass it through
     this.push(file);
-    callback();
-    return;
+    return callback();
   });
 };
 
@@ -68,25 +60,13 @@ const uncache = function(name) {
     //if building for the first time, pass everything through
     if (!caches[name].prev) {
       this.push(file);
-      callback();
-      return;
+      return callback();
     }
     //bundled once already, loop through all cached file buffers and pass through
     for (let i of caches[name].next) {
       this.push(i[1].processed);
     }
-    callback();
-    return;
-  });
-};
-
-const postCache = function(name) {
-  caches[name].prev = caches[name].next;
-  caches[name].next = new Map();
-  return through.obj(function(file, _enc, callback) {
-    this.push(file);
-    callback();
-    return;
+    return callback();
   });
 };
 
@@ -99,6 +79,4 @@ const remove = function(name, filePath) {
   }
 };
 
-const caches = {};
-
-module.exports = { cache, compare, uncache, postCache, remove, caches };
+module.exports = { cache, compare, uncache, remove, caches };
