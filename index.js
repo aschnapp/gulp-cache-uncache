@@ -47,8 +47,7 @@ const compare = function(name) {
     if (typeof cacheFile !== 'undefined' && cacheFile === contents) return callback();
     // miss - add it and pass it through
     this.push(file);
-    callback();
-    return;
+    return callback();
   });
 };
 
