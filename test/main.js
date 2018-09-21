@@ -1,4 +1,4 @@
-var { cache, compare, uncache, postCache, remove, caches } = require('../');
+var { cache, compare, uncache, remove, caches } = require('../');
 var File = require('vinyl');
 var through = require('through2');
 var PassThrough = require('stream').PassThrough;
@@ -21,24 +21,26 @@ describe('gulp-cache-uncache', function() {
       stream.write(file);
       stream.end();
     });
-  });
-
-  describe('postCache', function() {
-    it('should move previous cache to prev', function(done) {
+    it('should move next cache to prev cache', function(done) {
       const file = new File({
         path: '/home/file.js',
         contents: new Buffer('cache')
       });
       const stream = cache('1');
-      stream.write(file);
-      stream.end(function() {
-        const cachesNext = new Map(caches['1'].next);
-        postCache('1');
-        expect(cachesNext).to.deep.equal(caches['1'].prev);
+      stream.on('data', function() {
+        expect(caches['1'].prev).to.equal(undefined)
+      });
+      stream.on('end', function() {
+        const temp = new Map(caches['1'].next);
+        cache('1');
+        expect(caches['1'].prev).deep.equal(temp);
         done();
       });
+      stream.write(file);
+      stream.end();
     });
   });
+
   describe('compare', function() {
     it('should create a cache that only allows a file through once', function(done) {
       var file = new File({
@@ -56,8 +58,6 @@ describe('gulp-cache-uncache', function() {
       var cacheStream = cache('2');
       cacheStream.write(file);
       stream.write(file);
-      const postCacheStream = postCache('2');
-      postCacheStream.write(file);
       stream.write(file);
       stream.write(file);
       stream.write(file);
@@ -92,16 +92,12 @@ describe('gulp-cache-uncache', function() {
       const cacheStream = cache('test0');
       cacheStream.write(file);
       stream.write(file);
-      const postCacheStream = postCache('test0');
-      postCacheStream.write(file);
       stream.write(file);
       stream.end();
 
       const cacheStream1 = cache('test1');
       cacheStream1.write(file1);
       stream1.write(file1);
-      const postCacheStream1 = postCache('test1');
-      postCacheStream1.write(file1);
       stream1.write(file1);
       stream1.end();
     });
@@ -250,7 +246,6 @@ describe('gulp-cache-uncache', function() {
         expect(caches['8'].next.has(file.path)).to.equal(true);
       });
       cstream.on('end', function() {
-        postCache('8');
         remove('8', file.path);
         expect(caches['8'].next.has(file.path)).to.equal(false);
         expect(caches['8'].prev.has(file.path)).to.equal(false);
@@ -258,6 +253,7 @@ describe('gulp-cache-uncache', function() {
       });
       cstream.write(file);
       cstream.write(file1);
+      cache('8');
       cstream.end();
     });
   });

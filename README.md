@@ -22,11 +22,7 @@ compares cached files with new changes. Only releases changed files downstream
 
 ### uncache(cacheName)
 
-Releases all cached files at that point downstream in correct order
-
-### postCache(cacheName)
-
-Postprocessing for gulp-cache-uncache. See [index.js](./index.js) for more information
+Releases all cached files that have been processed at this point downstream in correct order
 
 ### remove(cacheName, absolutePath)
 
@@ -36,7 +32,7 @@ Removes file from cache
 
 ```javascript
 const gulp = require('gulp');
-const { cache, compare, uncache, postCache, remove } = require('gulp-cache-uncache');
+const { cache, compare, uncache, remove } = require('gulp-cache-uncache');
 const uglify = require('gulp-uglify');
 const concat = require('gulp-concat');
 
@@ -54,13 +50,8 @@ gulp.task('bundle', [ 'preBundle' ], () => {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('postBundle', [ 'bundle' ], (done) => {
-  postCache('src'); //required postprocessing for gulp-cache-uncache
-  done();
-});
-
 gulp.task('watch' ,() => {
-  const watcher = gulp.watch('src/*', ['postBundle']);
+  const watcher = gulp.watch('src/*', ['bundle']);
   watcher.on('change', function (event) {
     if (event.type === 'deleted') {
       remove('src', event.path); //remove file from cache
@@ -75,7 +66,7 @@ gulp.task('default', ['watch']);
 
 ```javascript
 const gulp = require('gulp');
-const { cache, compare, uncache, postCache, remove } = require('gulp-cache-uncache');
+const { cache, compare, uncache, remove } = require('gulp-cache-uncache');
 const uglify = require('gulp-uglify');
 const concat = require('gulp-concat');
 
@@ -93,15 +84,14 @@ gulp.task('bundle', () => {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('postBundle', (done) => {
-  postCache('src'); //required postprocessing for gulp-cache-uncache
-  done();
-});
-
 gulp.task('watch', () => {
-  const watcher = gulp.watch('src/*', gulp.series('preBundle', 'bundle', 'postBundle'));
+  const watcher = gulp.watch('src/*', gulp.series('preBundle', 'bundle'));
   watcher.on('unlink', function (path) {
     remove('src', path); //remove file from cache
   });
 });
 ```
+
+### [deprecated (v0.0.1)] postCache(cacheName)
+
+Postprocessing for gulp-cache-uncache. See [index.js](./index.js) for more information
