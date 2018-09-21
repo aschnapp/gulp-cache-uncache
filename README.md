@@ -28,6 +28,10 @@ Releases all cached files that have been processed at this point downstream in c
 
 Removes file from cache
 
+### [deprecated (v0.0.2)] postCache(cacheName)
+
+Postprocessing for gulp-cache-uncache. See [index.js](./index.js) for more information
+
 ## Example 1 (gulp 3.9.1):
 
 ```javascript
@@ -91,7 +95,3 @@ gulp.task('watch', () => {
   });
 });
 ```
-
-### [deprecated (v0.0.1)] postCache(cacheName)
-
-Postprocessing for gulp-cache-uncache. See [index.js](./index.js) for more information
