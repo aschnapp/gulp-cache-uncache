@@ -246,6 +246,7 @@ describe('gulp-cache-uncache', function() {
         expect(caches['8'].next.has(file.path)).to.equal(true);
       });
       cstream.on('end', function() {
+        cache('8');
         remove('8', file.path);
         expect(caches['8'].next.has(file.path)).to.equal(false);
         expect(caches['8'].prev.has(file.path)).to.equal(false);
@@ -253,7 +254,6 @@ describe('gulp-cache-uncache', function() {
       });
       cstream.write(file);
       cstream.write(file1);
-      cache('8');
       cstream.end();
     });
   });
